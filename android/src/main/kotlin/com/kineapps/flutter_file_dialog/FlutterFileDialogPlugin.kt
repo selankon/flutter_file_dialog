@@ -16,11 +16,19 @@ import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 import io.flutter.plugin.common.PluginRegistry.Registrar
 
+import android.content.Context
+import android.app.Activity
+import android.net.Uri
+
+
 class FlutterFileDialogPlugin : FlutterPlugin, ActivityAware, MethodCallHandler {
     private var fileDialog: FileDialog? = null
     private var pluginBinding: FlutterPlugin.FlutterPluginBinding? = null
     private var activityBinding: ActivityPluginBinding? = null
     private var methodChannel: MethodChannel? = null
+
+    private lateinit var context: Context
+    private lateinit var activity: Activity
 
     // V1 only
     private var registrar: Registrar? = null
@@ -61,6 +69,7 @@ class FlutterFileDialogPlugin : FlutterPlugin, ActivityAware, MethodCallHandler 
     // note: this may be called multiple times on app startup
     override fun onAttachedToActivity(binding: ActivityPluginBinding) {
         Log.d(LOG_TAG, "onAttachedToActivity")
+        activity = binding.activity
         doOnAttachedToActivity(binding)
     }
 
@@ -84,6 +93,7 @@ class FlutterFileDialogPlugin : FlutterPlugin, ActivityAware, MethodCallHandler 
 
         methodChannel = MethodChannel(messenger, "flutter_file_dialog")
         methodChannel?.setMethodCallHandler(this)
+        context = pluginBinding!!.applicationContext
 
         Log.d(LOG_TAG, "doOnAttachedToEngine - OUT")
     }
@@ -134,13 +144,18 @@ class FlutterFileDialogPlugin : FlutterPlugin, ActivityAware, MethodCallHandler 
             }
         }
         when (call.method) {
-            "pickFile" -> fileDialog!!.pickFile(
-                    result,
-                    fileExtensionsFilter = parseMethodCallArrayArgument(call, "fileExtensionsFilter"),
-                    mimeTypesFilter = parseMethodCallArrayArgument(call, "mimeTypesFilter"),
-                    localOnly = call.argument("localOnly") as Boolean? == true,
-                    copyFileToCacheDir = call.argument("copyFileToCacheDir") as Boolean? != false
-            )
+            "pickFile" -> {
+                println(context)
+                FileDirectory.getAbsolutePath(context, Uri.parse("content://media/external/images/media/41"))
+            }
+
+//            "pickFile" -> fileDialog!!.pickFile(
+//                    result,
+//                    fileExtensionsFilter = parseMethodCallArrayArgument(call, "fileExtensionsFilter"),
+//                    mimeTypesFilter = parseMethodCallArrayArgument(call, "mimeTypesFilter"),
+//                    localOnly = call.argument("localOnly") as Boolean? == true,
+//                    copyFileToCacheDir = call.argument("copyFileToCacheDir") as Boolean? != false
+//            )
             "saveFile" -> fileDialog!!.saveFile(
                     result,
                     sourceFilePath = call.argument("sourceFilePath"),
