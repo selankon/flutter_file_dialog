@@ -131,8 +131,8 @@ object FileDirectory {
         println(context.getApplicationContext().contentResolver)
         println(context.contentResolver)
         try {
-//            cursor = context.contentResolver.query(uri, projection, selection, selectionArgs, null)
-            cursor = context.contentResolver.query(uri, null, null, null, null)
+            cursor = context.contentResolver.query(uri, projection, selection, selectionArgs, null)
+//            cursor = context.contentResolver.query(uri, null, null, null, null)
             println("CRUSOR MOCE TO FIRST")
             println(cursor!!.moveToFirst())
             println(cursor!!.getCount())
